@@ -1,0 +1,102 @@
+﻿@model IEnumerable<SuperFit.Models.Order>
+
+@{
+    ViewData["Title"] = "Моите поръчки";
+}
+
+@functions {
+    string StatusBg(SuperFit.Models.OrderStatus s) => s switch
+    {
+        SuperFit.Models.OrderStatus.Pending => "Очаква обработка",
+        SuperFit.Models.OrderStatus.Cancelled => "Отказана",
+        SuperFit.Models.OrderStatus.Approved => "Одобрена",
+        _ => s.ToString()
+    };
+
+
+
+    string TimeAgo(DateTime utcDate)
+    {
+        var local = utcDate.ToLocalTime();
+        var diff = DateTime.Now - local;
+
+        if (diff.TotalSeconds < 60) return $"преди {Math.Max(1, (int)diff.TotalSeconds)} секунди";
+        if (diff.TotalMinutes < 60) return $"преди {(int)diff.TotalMinutes} минути";
+        if (diff.TotalHours < 24) return $"преди {(int)diff.TotalHours} часа";
+        if (diff.TotalDays < 7) return $"преди {(int)diff.TotalDays} дни";
+        if (diff.TotalDays < 30) return $"преди {(int)(diff.TotalDays / 7)} седмици";
+        return $"на {local:dd.MM.yyyy HH:mm}";
+    }
+}
+
+<h1>Моите поръчки</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Нямаш направени поръчки.</div>
+}
+else
+{
+    @foreach (var o in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            @functions {
+                string StatusClass(SuperFit.Models.OrderStatus s) => s switch
+                {
+                    SuperFit.Models.OrderStatus.Pending => "bg-warning text-dark",
+                    SuperFit.Models.OrderStatus.Approved => "bg-success",
+                    SuperFit.Models.OrderStatus.Cancelled => "bg-danger",
+                    _ => "bg-secondary"
+                };
+            }
+            <span class="badge @StatusClass(o.Status)">
+                @if (o.Status == SuperFit.Models.OrderStatus.Pending)
+                {
+                    <text>⏳ Чака одобрение</text>
+                }
+                else if (o.Status == SuperFit.Models.OrderStatus.Approved)
+                {
+                    <text>✅ Одобрена</text>
+                }
+                else if (o.Status == SuperFit.Models.OrderStatus.Cancelled)
+                {
+                    <text>❌ Отказана</text>
+                }
+            </span>
+
+                    <div>
+                        <b>Поръчка № @o.Id</b><br />
+                        <span class="text-muted">Създадена @TimeAgo(o.CreatedOn)</span>
+                    </div>
+
+                    <div class="text-end">
+                        <div><b>@($"{o.TotalPrice:0.00} €")</b></div>
+                        <div class="text-muted">Статус: @StatusBg(o.Status)</div>
+                    </div>
+
+                </div>
+
+                <ul class="mb-3">
+                    @foreach (var it in o.Items)
+                    {
+                        <li>
+                            @it.Product?.Name — @it.Quantity бр. × @($"{it.UnitPrice:0.00} €")
+                        </li>
+                    }
+                </ul>
+
+                <form asp-action="Delete" method="post" class="d-flex justify-content-end">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@o.Id" />
+
+                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Сигурен ли си, че искаш да изтриеш тази поръчка?');">
+                        Изтрий поръчката
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+}

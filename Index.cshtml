@@ -1,0 +1,43 @@
+﻿@model IEnumerable<SuperFit.Models.ContactMessage>
+
+@{
+    ViewData["Title"] = "Съобщения";
+}
+
+<h1>Съобщения</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.First().Name)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Email)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Subject)</th>
+            <th>@Html.DisplayNameFor(m => m.First().SentOn)</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Email</td>
+                <td>@item.Subject</td>
+                <td>@item.SentOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                <td>
+                    <a class="btn btn-sm btn-info text-white"
+                       asp-action="Details"
+                       asp-route-id="@item.Id">
+                        👁 Детайли
+                    </a>
+
+                    <a class="btn btn-sm btn-danger"
+                       asp-action="Delete"
+                       asp-route-id="@item.Id">
+                        🗑 Изтрий
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

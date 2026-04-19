@@ -1,0 +1,135 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SuperFit.Models
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - СуперФит</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/minty/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/theme-overrides.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SuperFit.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/superfit-theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/superfit-lux.css" asp-append-version="true" />
+</head>
+
+<body>
+    <div class="sf-decor sf-decor--1"></div>
+    <div class="sf-decor sf-decor--2"></div>
+    <div class="sf-decor sf-decor--3"></div>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+            <div class="container-fluid">
+
+                <!-- Brand + Hamburger -->
+                <div class="d-flex align-items-center gap-2">
+                    <a class="navbar-brand d-flex align-items-center gap-2 mb-0"
+                       asp-area="" asp-controller="Home" asp-action="Index">
+                        <span class="fw-bold">SuperFit</span>
+                    </a>
+
+                    <button class="btn btn-sm btn-outline-secondary"
+                            type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#mainMenu"
+                            aria-controls="mainMenu"
+                            aria-label="Меню">
+                        ☰
+                    </button>
+                </div>
+
+                <!-- Right side -->
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                    <partial name="_LoginPartial" />
+
+                    <button id="themeToggle"
+                            data-theme-toggle
+                            type="button"
+                            class="btn btn-sm btn-outline-warning"
+                            title="Dark / Light mode">
+                        🌙
+                    </button>
+
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- Offcanvas Menu -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="mainMenu" aria-labelledby="mainMenuLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="mainMenuLabel">Меню</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Затвори"></button>
+            </div>
+
+            <div class="offcanvas-body">
+                <div class="list-group">
+                    <a class="list-group-item list-group-item-action" href="@Url.Action("Index", "Home")">Начало</a>
+                    <a class="list-group-item list-group-item-action" href="@Url.Action("Index", "Products")">Хранителни добавки</a>
+                    <a class="list-group-item list-group-item-action" href="@Url.Action("Index", "Categories")">Категории</a>
+                    <a class="list-group-item list-group-item-action" href="@Url.Action("Index", "Contact")">Контакти</a>
+                    <a asp-controller="Cart" asp-action="Index" class="list-group-item list-group-item-action">
+                        Количка
+                    </a>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a class="list-group-item list-group-item-action" href="@Url.Action("MyOrders", "Orders")">Поръчки</a>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="list-group-item list-group-item-action" href="@Url.Action("Index", "ContactMessages")">Съобщения</a>
+                    }
+                </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+
+            @if (TempData["Msg"] != null)
+            {
+                <div class="container mt-3">
+                    <div class="alert alert-success shadow-sm border-0">
+                        @TempData["Msg"]
+                    </div>
+                </div>
+            }
+
+            @if (TempData["Err"] != null)
+            {
+                <div class="container mt-3">
+                    <div class="alert alert-danger shadow-sm border-0">
+                        @TempData["Err"]
+                    </div>
+                </div>
+            }
+
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top py-4 mt-5">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <div class="text-muted">
+                © @DateTime.Now.Year - <b>СуперФит</b> • Онлайн магазин за хранителни добавки
+            </div>
+            <div class="text-muted small">ASP.NET Core MVC • .NET 8 • SQL</div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/theme-toggle.js" asp-append-version="true"></script>
+</body>
+</html>

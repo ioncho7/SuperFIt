@@ -1,0 +1,42 @@
+﻿@model SuperFit.Models.Order
+
+@{
+    ViewData["Title"] = $"Детайли за поръчка №{Model.Id}";
+}
+
+@functions {
+    string StatusBg(SuperFit.Models.OrderStatus s) => s switch
+    {
+        SuperFit.Models.OrderStatus.Pending => "Очаква обработка",
+        SuperFit.Models.OrderStatus.Approved => "Одобрена",
+        SuperFit.Models.OrderStatus.Cancelled => "Отказана",
+        _ => s.ToString()
+    };
+}
+
+<h1>Поръчка № @Model.Id</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div><b>Дата:</b> @Model.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+        <div><b>Статус:</b> @StatusBg(Model.Status)</div>
+        <div><b>Сума:</b> @($"{Model.TotalPrice:0.00} €")</div>
+        <div><b>Потребител:</b> @Model.UserId</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5>Продукти</h5>
+        <ul class="mb-0">
+            @foreach (var it in Model.Items)
+            {
+                <li>@it.Product?.Name — @it.Quantity бр. × @($"{it.UnitPrice:0.00} €")</li>
+            }
+        </ul>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="AdminOrders" class="btn btn-secondary">Назад</a>
+</div>

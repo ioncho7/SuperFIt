@@ -1,0 +1,68 @@
+﻿@model IEnumerable<SuperFit.Models.Order>
+
+@{
+    ViewData["Title"] = "Поръчки (Админ)";
+}
+
+@functions {
+    string StatusBg(SuperFit.Models.OrderStatus s) => s switch
+    {
+        SuperFit.Models.OrderStatus.Pending => "Очаква обработка",
+        SuperFit.Models.OrderStatus.Approved => "Одобрена",
+        SuperFit.Models.OrderStatus.Cancelled => "Отказана",
+        _ => s.ToString()
+    };
+}
+
+<h1>Поръчки (Админ)</h1>
+
+@if (TempData["MsgAdmin"] != null)
+{
+    <div class="alert alert-success">@TempData["MsgAdmin"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Няма поръчки.</div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Дата</th>
+                        <th>Потребител</th>
+                        <th>Сума</th>
+                        <th>Статус</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model)
+                    {
+                        <tr>
+                            <td>@o.Id</td>
+                            <td>@o.CreatedOn.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@o.UserId</td>
+                            <td><b>@($"{o.TotalPrice:0.00} €")</b></td>
+                            <td>@StatusBg(o.Status)</td>
+                            <td class="text-end">
+                                @if ((int)o.Status == 0)
+                                {
+                                    <form asp-action="Approve" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@o.Id" />
+                                        <button type="submit" class="btn btn-sm btn-success">Одобри</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+       </div>
+}

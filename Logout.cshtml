@@ -1,0 +1,16 @@
+﻿@page
+@using SuperFit.Models
+@model LogoutModel
+@{
+    ViewData["Title"] = "Изход";
+}
+
+<header>
+    <h1>Изход</h1>
+    <p class="text-muted">Сигурен ли си, че искаш да излезеш?</p>
+</header>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Изход</button>
+    <a class="btn btn-secondary" asp-area="" asp-controller="Home" asp-action="Index">Отказ</a>
+</form>
