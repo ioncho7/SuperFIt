@@ -1,0 +1,10 @@
+{
+  "version": "3.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "bootswatch@5/dist/minty/bootstrap.min.css",
+      "destination": "wwwroot/lib/bootswatch/minty"
+    }
+  ]
+}
